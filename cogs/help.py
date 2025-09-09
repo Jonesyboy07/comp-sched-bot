@@ -5,6 +5,7 @@ import os
 from os import path
 from dotenv import load_dotenv
 from utils.funcs import ReadJSON, CheckIfBotChannel
+from utils.constants import INVITE_LINK
 
 class SectionDropdown(discord.ui.Select):
     def __init__(self, sections):
@@ -76,11 +77,7 @@ class HelpView(discord.ui.View):
             self.update_buttons()
             await interaction.response.edit_message(
                 embed=self.get_embed(),
-                view=self,
-                ephemeral=CheckIfBotChannel(
-                    interaction.channel_id,
-                    interaction.guild_id
-                )
+                view=self
             )
 
     async def next_page(self, interaction: discord.Interaction):
@@ -89,16 +86,11 @@ class HelpView(discord.ui.View):
             self.update_buttons()
             await interaction.response.edit_message(
                 embed=self.get_embed(),
-                view=self,
-                ephemeral=CheckIfBotChannel(
-                    interaction.channel_id,
-                    interaction.guild_id
-                )
+                view=self
             )
 
     async def stop_view(self, interaction: discord.Interaction):
-        await interaction.message.delete()
-        await interaction.response.defer()  # Prevent "interaction failed" message
+        await interaction.response.edit_message(content="Command Done", embed=None, view=None)
 
     def get_embed(self):
         commands = self.get_commands()
@@ -169,8 +161,37 @@ class HelpCog(commands.Cog):
         embed.add_field(name="Developer", value="Jonesy", inline=True)
         embed.add_field(name="Support", value="[Support Page](https://github.com/Jonesyboy07/comp-sched-bot/issues)", inline=True)
         embed.add_field(name="GitHub", value="[GitHub Repository](https://github.com/Jonesyboy07/comp-sched-bot)", inline=True)
-        embed.add_field(name="Invite", value="[Invite Link](https://discord.com/oauth2/authorize?client_id=1415031692137336872&permissions=2147544129&integration_type=0&scope=bot+applications.commands)", inline=True)
+        embed.add_field(name="Invite", value=f"[Invite Link]({INVITE_LINK})", inline=True)
+        embed.add_field(name="Donation Link", value="[Donate Here](https://ko-fi.com/jonesy_alr)", inline=True)
         await interaction.response.send_message(
             embed=embed,
             ephemeral=True
+        )
+        
+    @app_commands.command(name="invite", description="Get the bot invite link")
+    async def invite_command(self, interaction: discord.Interaction):
+        await interaction.response.send_message(
+            f"Invite the bot using this link: {INVITE_LINK}",
+            ephemeral=CheckIfBotChannel(
+                interaction.channel_id,
+                interaction.guild_id
+            )
+        )
+    
+    @app_commands.command(name="stats", description="Show bot statistics")
+    async def stats_command(self, interaction: discord.Interaction):
+        total_guilds = len(self.bot.guilds)
+        total_users = len(set(self.bot.get_all_members()))
+        embed = discord.Embed(
+            title="Bot Statistics",
+            color=discord.Color.purple()
+        )
+        embed.add_field(name="Total Servers", value=str(total_guilds), inline=True)
+        embed.add_field(name="Total Users", value=str(total_users), inline=True)
+        await interaction.response.send_message(
+            embed=embed,
+            ephemeral=CheckIfBotChannel(
+                interaction.channel_id,
+                interaction.guild_id
+            )
         )

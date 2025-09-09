@@ -52,7 +52,7 @@ def ReadJSON(filename):
     with open(filename, 'r') as f:
         return json.load(f)
 
-def WriteJSON(filename, data, indent=4):
+def WriteJSON(data, filename, indent=4):
     """Write **data** to a JSON file, with specified indentation.
 
     Args:

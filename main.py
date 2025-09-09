@@ -4,11 +4,17 @@ from dotenv import load_dotenv
 import discord
 from discord.ext import commands
 from cogs.init import get_cogs
+from utils.stats_cache import cache_stats
 
 load_dotenv()
 token = os.getenv("DISCORD_TOKEN")
 clientid = os.getenv("DISCORD_CLIENT_ID")
 prefix = os.getenv("PREFIX", "!")
+
+invite_link = os.getenv("INVITE_LINK")
+
+print(invite_link)
+
 
 intents = discord.Intents.default()
 intents.guilds = True
@@ -25,6 +31,7 @@ client = commands.Bot(command_prefix=prefix,
 async def on_ready():
     print("Bot is online")
     print(f"Logged in as: {client.user} - {client.user.id}")
+    client.loop.create_task(cache_stats(client))
     # await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="The Number One Free Scheduling Bot"))
     try:
         synced_commands = await client.tree.sync()  # Ensure commands are synced
