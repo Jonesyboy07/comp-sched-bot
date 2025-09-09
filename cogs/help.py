@@ -158,3 +158,19 @@ class HelpCog(commands.Cog):
                 interaction.guild_id
             )
         )
+        
+    @app_commands.command(name="info", description="Show bot information")
+    async def info_command(self, interaction: discord.Interaction):
+        embed = discord.Embed(
+            title="Bot Information",
+            description="This bot is designed to help manage the server and provide useful commands.",
+            color=discord.Color.green()
+        )
+        embed.add_field(name="Developer", value="Jonesy", inline=True)
+        embed.add_field(name="Support", value="[Support Page](https://github.com/Jonesyboy07/comp-sched-bot/issues)", inline=True)
+        embed.add_field(name="GitHub", value="[GitHub Repository](https://github.com/Jonesyboy07/comp-sched-bot)", inline=True)
+        embed.add_field(name="Invite", value="[Invite Link](https://discord.com/oauth2/authorize?client_id=1415031692137336872&permissions=2147544129&integration_type=0&scope=bot+applications.commands)", inline=True)
+        await interaction.response.send_message(
+            embed=embed,
+            ephemeral=True
+        )
