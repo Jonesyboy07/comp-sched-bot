@@ -1,0 +1,68 @@
+# Node modules
+node_modules/
+
+# Python virtual environments
+venv/
+.env/
+*.env
+
+# Database files
+*.sqlite3
+*.db
+*.mdb
+*.bak
+*.sql
+
+# Logs
+*.log
+logs/
+log/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+
+# Build output
+dist/
+build/
+out/
+
+# Coverage reports
+coverage/
+*.lcov
+
+# Misc
+*.pyc
+__pycache__/
+*.pyo
+
+# Secrets
+secrets.*
+*.key
+*.pem
+*.crt
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
+# Test results
+test-results/
+junit.xml
+
+# Docker
+*.pid
+*.sock
+
+# Others
+*.tgz
+data/commands.json
+data/leagues.json
+data/servers.json
+utils/db.py
