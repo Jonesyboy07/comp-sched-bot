@@ -1,8 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-import json
-from utils.funcs import CheckIfAdminRole
+from utils.funcs import CheckIfAdminRole, ReadJSON, WriteJSON
 
 
 class SetupCog(commands.Cog):
@@ -27,7 +26,7 @@ class SetupCog(commands.Cog):
         filename = "data/servers.json"
         try:
             with open(filename, 'r') as f:
-                data = json.load(f)
+                data = ReadJSON(f)
         except FileNotFoundError:
             data = {}
 
@@ -48,7 +47,7 @@ class SetupCog(commands.Cog):
 
         # Save updated data
         with open(filename, 'w') as f:
-            json.dump(data, f, indent=4)
+            WriteJSON(data, f, indent=4)
 
         await interaction.response.send_message(
             f"Setup complete! Channel(s): <#{BotChannel}> ({BotChannel}), Admin role(s): <@&{AdminRole}>.",
@@ -75,7 +74,7 @@ class SetupCog(commands.Cog):
         filename = "data/servers.json"
         try:
             with open(filename, 'r') as f:
-                data = json.load(f)
+                data = ReadJSON(f)
         except FileNotFoundError:
             return await interaction.response.send_message(
                 "Server is not set up yet. Please run /setup first.",
@@ -98,7 +97,7 @@ class SetupCog(commands.Cog):
 
         # Save updated data
         with open(filename, 'w') as f:
-            json.dump(data, f, indent=4)
+            WriteJSON(data, f, indent=4)
 
         await interaction.response.send_message(
             f"Channel <#{ChannelID}> has been added as a bot channel.",
@@ -125,7 +124,7 @@ class SetupCog(commands.Cog):
         filename = "data/servers.json"
         try:
             with open(filename, 'r') as f:
-                data = json.load(f)
+                data = ReadJSON(f)
         except FileNotFoundError:
             return await interaction.response.send_message(
                 "Server is not set up yet. Please run /setup first.",
@@ -148,7 +147,7 @@ class SetupCog(commands.Cog):
 
         # Save updated data
         with open(filename, 'w') as f:
-            json.dump(data, f, indent=4)
+            WriteJSON(data, f, indent=4)
 
         await interaction.response.send_message(
             f"Channel <#{ChannelID}> has been removed from bot channels.",
@@ -169,7 +168,7 @@ class SetupCog(commands.Cog):
         filename = "data/servers.json"
         try:
             with open(filename, 'r') as f:
-                data = json.load(f)
+                data = ReadJSON(f)
         except FileNotFoundError:
             return await interaction.response.send_message(
                 "Server is not set up yet. Please run /setup first.",
@@ -209,7 +208,7 @@ class SetupCog(commands.Cog):
         filename = "data/servers.json"
         try:
             with open(filename, 'r') as f:
-                data = json.load(f)
+                data = ReadJSON(f)
         except FileNotFoundError:
             return await interaction.response.send_message(
                 "Server is not set up yet. Please run /setup first.",
@@ -255,7 +254,7 @@ class SetupCog(commands.Cog):
         filename = "data/servers.json"
         try:
             with open(filename, 'r') as f:
-                data = json.load(f)
+                data = ReadJSON(f)
         except FileNotFoundError:
             return await interaction.response.send_message(
                 "Server is not set up yet. Please run /setup first.",
@@ -278,7 +277,7 @@ class SetupCog(commands.Cog):
 
         # Save updated data
         with open(filename, 'w') as f:
-            json.dump(data, f, indent=4)
+            WriteJSON(data, f, indent=4)
 
         await interaction.response.send_message(
             f"Role <@&{RoleID}> has been added as an admin role.",
@@ -305,7 +304,7 @@ class SetupCog(commands.Cog):
         filename = "data/servers.json"
         try:
             with open(filename, 'r') as f:
-                data = json.load(f)
+                data = ReadJSON(f)
         except FileNotFoundError:
             return await interaction.response.send_message(
                 "Server is not set up yet. Please run /setup first.",
@@ -328,7 +327,7 @@ class SetupCog(commands.Cog):
 
         # Save updated data
         with open(filename, 'w') as f:
-            json.dump(data, f, indent=4)
+            WriteJSON(data, f, indent=4)
 
         await interaction.response.send_message(
             f"Role <@&{RoleID}> has been removed from admin roles.",

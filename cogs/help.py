@@ -1,15 +1,10 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-import json
 import os
 from os import path
 from dotenv import load_dotenv
-
-
-def LoadJSON(filename):
-    with open(filename, 'r') as f:
-        return json.load(f)
+from utils.funcs import ReadJSON, CheckIfBotChannel
 
 class SectionDropdown(discord.ui.Select):
     def __init__(self, sections):
@@ -27,7 +22,14 @@ class SectionDropdown(discord.ui.Select):
         view.selected_section = self.values[0]
         view.page = 0
         view.update_buttons()
-        await interaction.response.edit_message(embed=view.get_embed(), view=view)
+        await interaction.response.edit_message(
+            embed=view.get_embed(),
+            view=view,
+            ephemeral=CheckIfBotChannel(
+                interaction.channel_id,
+                interaction.guild_id
+            )
+        )
 
 class HelpView(discord.ui.View):
     def __init__(self, sections, per_page=5):
@@ -72,13 +74,27 @@ class HelpView(discord.ui.View):
         if self.page > 0:
             self.page -= 1
             self.update_buttons()
-            await interaction.response.edit_message(embed=self.get_embed(), view=self)
+            await interaction.response.edit_message(
+                embed=self.get_embed(),
+                view=self,
+                ephemeral=CheckIfBotChannel(
+                    interaction.channel_id,
+                    interaction.guild_id
+                )
+            )
 
     async def next_page(self, interaction: discord.Interaction):
         if self.page < self.max_page:
             self.page += 1
             self.update_buttons()
-            await interaction.response.edit_message(embed=self.get_embed(), view=self)
+            await interaction.response.edit_message(
+                embed=self.get_embed(),
+                view=self,
+                ephemeral=CheckIfBotChannel(
+                    interaction.channel_id,
+                    interaction.guild_id
+                )
+            )
 
     async def stop_view(self, interaction: discord.Interaction):
         await interaction.message.delete()
@@ -109,17 +125,36 @@ class HelpCog(commands.Cog):
 
     @app_commands.command(name="help", description="Show help information")
     async def help_command(self, interaction: discord.Interaction):
-        sections = LoadJSON("data/commands.json")["sections"]
+        sections = ReadJSON("data/commands.json")["sections"]
         view = HelpView(sections)
-        await interaction.response.send_message(embed=view.get_embed(), view=view)
+        await interaction.response.send_message(
+            embed=view.get_embed(),
+            view=view,
+            ephemeral=CheckIfBotChannel(
+                interaction.channel_id,
+                interaction.guild_id
+            )
+        )
 
     @app_commands.command(name="version", description="Show bot version")
     async def version_command(self, interaction: discord.Interaction):
         load_dotenv(dotenv_path=path.abspath(path.join(os.getcwd(), ".env")))
         version = os.getenv("VERSION", "Unknown")
-        await interaction.response.send_message(f"Bot version: {version}")
+        await interaction.response.send_message(
+            f"Bot version: {version}", 
+            ephemeral=CheckIfBotChannel(
+                interaction.channel_id, 
+                interaction.guild_id
+            )
+        )
 
     @app_commands.command(name="ping", description="Check bot latency")
     async def ping_command(self, interaction: discord.Interaction):
         latency = self.bot.latency * 1000  # Convert to milliseconds
-        await interaction.response.send_message(f"Pong! Latency: {latency:.3f} ms")
+        await interaction.response.send_message(
+            f"Pong! Latency: {latency:.3f} ms",
+            ephemeral=CheckIfBotChannel(
+                interaction.channel_id,
+                interaction.guild_id
+            )
+        )
