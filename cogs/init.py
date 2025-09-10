@@ -4,6 +4,7 @@ from cogs.setup import SetupCog
 from cogs.team import TeamCog
 from cogs.schedule import ScheduleCog
 from cogs.event import EventCog
+from cogs.update import UpdateCog
 
 
 def get_cogs(bot):
@@ -13,5 +14,6 @@ def get_cogs(bot):
         SetupCog(bot),
         TeamCog(bot),
         ScheduleCog(bot),
-        EventCog(bot)
+        EventCog(bot),
+        UpdateCog(bot)
     ]
