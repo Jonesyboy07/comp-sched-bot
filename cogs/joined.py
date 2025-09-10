@@ -10,7 +10,7 @@ class JoinedCog(commands.Cog):
     async def on_guild_join(self, guild: discord.Guild):
         filename = "data/servers.json"
         try:
-            ReadJSON(filename)
+            data = ReadJSON(filename)
         except FileNotFoundError:
             data = {}
 
