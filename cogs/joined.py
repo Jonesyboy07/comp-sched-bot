@@ -17,4 +17,4 @@ class JoinedCog(commands.Cog):
         guild_id = str(guild.id)
         data[guild_id] = {"SetupComplete": False}
 
-        WriteJSON(filename, data, indent=4)
+        WriteJSON(data, filename, indent=4)
