@@ -8,6 +8,7 @@ A powerful, open-source Discord bot for scheduling games and events within your 
 
 ✨ **Easy Setup:** Server administrators can quickly set up the bot with a single command.  
 🗓️ **Team Scheduling:** Create, manage, and RSVP to team events with timezone support.  
+👥 **Multi-Team Support:** You can have **multiple teams per server** thanks to the way the bot handles teams, allowing you to run an entire organisation with ease.  
 ❓ **Help System:** Built-in help command with detailed usage for every feature.  
 🔓 **Open Source:** Freely clone, modify, and contribute!  
 💸 **No Paywalls:** 100% free to use. [Support development on Ko-Fi!](https://ko-fi.com/jonesy_alr)
@@ -100,4 +101,4 @@ If you fork or use this bot, please keep credit to the original author.
 <div align="center">
 
 **Thank you for checking out Game Schedule Bot!**  
-Made with ❤️ for the Discord gaming
+Made with ❤️ for the Discord gaming community.
