@@ -8,19 +8,19 @@ class SetupCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-
-    @app_commands.command(name="setup", description="Setup the bot in this server")
+    @app_commands.command(name="setup", description="Set up the bot in this server.")
     @app_commands.checks.has_permissions(administrator=True)
     async def setup_command(
         self, 
         interaction: discord.Interaction, 
         command_channel: discord.TextChannel, 
-        admin_role: discord.Role
-        ):
-        
+        admin_role: discord.Role,
+        update_logs: discord.TextChannel
+    ):
         GuildID = str(interaction.guild.id)
         BotChannel = str(command_channel.id)
         AdminRole = str(admin_role.id)
+        UpdateLogsChannel = str(update_logs.id)
         
         # Load existing server data
         filename = "data/servers.json"
@@ -40,6 +40,7 @@ class SetupCog(commands.Cog):
         data[GuildID] = {
             "bot_channels": [BotChannel],
             "admin_roles": [AdminRole],
+            "update_logs_channel": UpdateLogsChannel,
             "leagues": [],
             "teams": [],
             "SetupComplete": True
@@ -50,19 +51,18 @@ class SetupCog(commands.Cog):
 
         await interaction.response.send_message(
             f"""Setup complete! Channel(s): <#{BotChannel}> ({BotChannel}), Admin role(s): <@&{AdminRole}>.
-            
-            I now reccomend going to your servers 'Integrations' tab and disabling the some commands for the '@everyone' role, so that only users permitted can see some of the private commands.
-            
-            You can add more bot channels with /addbotchannel and more admin roles with /addadminrole.
-            
-            You can also remove them with /removebotchannel and /removeadminrole.
-            
-            Run /help to see a list of commands and how to utilise them.""",
-            
+
+I now recommend going to your server's 'Integrations' tab and disabling some commands for the '@everyone' role, so that only permitted users can see private commands.
+
+You can add more bot channels with /addbotchannel and more admin roles with /addadminrole.
+
+You can also remove them with /removebotchannel and /removeadminrole.
+
+Run /help to see a list of commands and how to utilize them.""",
             ephemeral=True
         )
         
-    @app_commands.command(name="addbotchannel", description="Add a bot channel")
+    @app_commands.command(name="addbotchannel", description="Add a bot channel.")
     async def add_bot_channel(
         self,
         interaction: discord.Interaction,
@@ -110,7 +110,7 @@ class SetupCog(commands.Cog):
             ephemeral=True
         )
 
-    @app_commands.command(name="removebotchannel", description="Remove a bot channel")
+    @app_commands.command(name="removebotchannel", description="Remove a bot channel.")
     async def remove_bot_channel(
         self,
         interaction: discord.Interaction,
@@ -158,7 +158,7 @@ class SetupCog(commands.Cog):
             ephemeral=True
         )
         
-    @app_commands.command(name="listbotchannels", description="List all bot channels")
+    @app_commands.command(name="listbotchannels", description="List all bot channels.")
     async def list_bot_channels(self, interaction: discord.Interaction):
         GuildID = str(interaction.guild.id)
         # Check if user has admin role
@@ -171,7 +171,6 @@ class SetupCog(commands.Cog):
         # Load existing server data
         filename = "data/servers.json"
         try:
-            
             data = ReadJSON(filename)
         except FileNotFoundError:
             return await interaction.response.send_message(
@@ -198,7 +197,7 @@ class SetupCog(commands.Cog):
             ephemeral=True
         )
         
-    @app_commands.command(name="listadminroles", description="List all admin roles")
+    @app_commands.command(name="listadminroles", description="List all admin roles.")
     async def list_admin_roles(self, interaction: discord.Interaction):
         GuildID = str(interaction.guild.id)
         # Check if user has admin role
@@ -211,7 +210,6 @@ class SetupCog(commands.Cog):
         # Load existing server data
         filename = "data/servers.json"
         try:
-            
             data = ReadJSON(filename)
         except FileNotFoundError:
             return await interaction.response.send_message(
@@ -238,7 +236,7 @@ class SetupCog(commands.Cog):
             ephemeral=True
         )
         
-    @app_commands.command(name="addadminrole", description="Add an admin role")
+    @app_commands.command(name="addadminrole", description="Add an admin role.")
     async def add_admin_role(
         self,
         interaction: discord.Interaction,
@@ -285,7 +283,7 @@ class SetupCog(commands.Cog):
             ephemeral=True
         )
         
-    @app_commands.command(name="removeadminrole", description="Remove an admin role")
+    @app_commands.command(name="removeadminrole", description="Remove an admin role.")
     async def remove_admin_role(
         self,
         interaction: discord.Interaction,
