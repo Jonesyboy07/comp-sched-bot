@@ -31,3 +31,14 @@ With other projects *cough cough* *no names here* *cough cough* requiring a user
 5. Edit the `data/commands.json` with adequate descriptions for your project.
 
 6. Run `main.py` to start the bot!
+
+
+### Notes:
+
+The majority of this code is handwritten. In some places, AI was used to:
+
+- Fix errors
+
+- Implement complicated features
+
+- Streamline important parts

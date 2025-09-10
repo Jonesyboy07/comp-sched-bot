@@ -25,12 +25,8 @@ class SectionDropdown(discord.ui.Select):
         view.update_buttons()
         await interaction.response.edit_message(
             embed=view.get_embed(),
-            view=view,
-            ephemeral=CheckIfBotChannel(
-                interaction.channel_id,
-                interaction.guild_id
+            view=view
             )
-        )
 
 class HelpView(discord.ui.View):
     def __init__(self, sections, per_page=5):
@@ -102,7 +98,7 @@ class HelpView(discord.ui.View):
         start = self.page * self.per_page
         end = start + self.per_page
         for command in commands[start:end]:
-            admin_required = "✅ Requires Admin" if command.get("AdminRole", False) else "❌ No Admin Required"
+            admin_required = "✅ Requires Admin" if command.get("admin_required", False) else "❌ No Admin Required"
             embed.add_field(
                 name=f"{command['name']} ({command['usage']})",
                 value=f"{command['description']}\n{admin_required}",

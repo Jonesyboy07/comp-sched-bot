@@ -41,6 +41,7 @@ class SetupCog(commands.Cog):
             "bot_channels": [BotChannel],
             "admin_roles": [AdminRole],
             "leagues": [],
+            "teams": [],
             "SetupComplete": True
         }
 
@@ -48,7 +49,16 @@ class SetupCog(commands.Cog):
         WriteJSON(data, filename, indent=4)
 
         await interaction.response.send_message(
-            f"Setup complete! Channel(s): <#{BotChannel}> ({BotChannel}), Admin role(s): <@&{AdminRole}>.",
+            f"""Setup complete! Channel(s): <#{BotChannel}> ({BotChannel}), Admin role(s): <@&{AdminRole}>.
+            
+            I now reccomend going to your servers 'Integrations' tab and disabling the some commands for the '@everyone' role, so that only users permitted can see some of the private commands.
+            
+            You can add more bot channels with /addbotchannel and more admin roles with /addadminrole.
+            
+            You can also remove them with /removebotchannel and /removeadminrole.
+            
+            Run /help to see a list of commands and how to utilise them.""",
+            
             ephemeral=True
         )
         
