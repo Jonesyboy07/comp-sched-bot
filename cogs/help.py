@@ -118,7 +118,7 @@ class HelpCog(commands.Cog):
         await interaction.response.send_message(
             embed=view.get_embed(),
             view=view,
-            ephemeral=CheckIfBotChannel(
+            ephemeral= not CheckIfBotChannel(
                 interaction.channel_id,
                 interaction.guild_id
             )
@@ -130,7 +130,7 @@ class HelpCog(commands.Cog):
         version = os.getenv("VERSION", "Unknown")
         await interaction.response.send_message(
             f"Bot version: {version}", 
-            ephemeral=CheckIfBotChannel(
+            ephemeral= not CheckIfBotChannel(
                 interaction.channel_id, 
                 interaction.guild_id
             )
@@ -141,7 +141,7 @@ class HelpCog(commands.Cog):
         latency = self.bot.latency * 1000  # Convert to milliseconds
         await interaction.response.send_message(
             f"Pong! Latency: {latency:.3f} ms",
-            ephemeral=CheckIfBotChannel(
+            ephemeral= not CheckIfBotChannel(
                 interaction.channel_id,
                 interaction.guild_id
             )
@@ -168,7 +168,7 @@ class HelpCog(commands.Cog):
     async def invite_command(self, interaction: discord.Interaction):
         await interaction.response.send_message(
             f"Invite the bot using this link: {INVITE_LINK}",
-            ephemeral=CheckIfBotChannel(
+            ephemeral= not CheckIfBotChannel(
                 interaction.channel_id,
                 interaction.guild_id
             )
@@ -186,7 +186,7 @@ class HelpCog(commands.Cog):
         embed.add_field(name="Total Users", value=str(total_users), inline=True)
         await interaction.response.send_message(
             embed=embed,
-            ephemeral=CheckIfBotChannel(
+            ephemeral= not CheckIfBotChannel(
                 interaction.channel_id,
                 interaction.guild_id
             )
