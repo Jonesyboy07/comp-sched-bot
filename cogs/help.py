@@ -155,8 +155,8 @@ class HelpCog(commands.Cog):
             color=discord.Color.green()
         )
         embed.add_field(name="Developer", value="Jonesy", inline=True)
-        embed.add_field(name="Support", value="[Support Page](https://github.com/Jonesyboy07/comp-sched-bot/issues)", inline=True)
-        embed.add_field(name="GitHub", value="[GitHub Repository](https://github.com/Jonesyboy07/comp-sched-bot)", inline=True)
+        embed.add_field(name="Support", value="[Support Page](https://github.com/Jonesyboy07/team-organizer/issues)", inline=True)
+        embed.add_field(name="GitHub", value="[GitHub Repository](https://github.com/Jonesyboy07/team-organizer)", inline=True)
         embed.add_field(name="Invite", value=f"[Invite Link]({INVITE_LINK})", inline=True)
         embed.add_field(name="Donation Link", value="[Donate Here](https://ko-fi.com/jonesy_alr)", inline=True)
         await interaction.response.send_message(

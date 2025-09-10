@@ -21,7 +21,7 @@ A powerful, open-source Discord bot for scheduling games and events within your 
 
 1. **Clone/Download** this repository:
    ```powershell
-   git clone https://github.com/ceejay/comp-sched-bot.git
+   git clone https://github.com/Jonesyboy07/team-organizer.git
    ```
 2. **Install dependencies:**
    ```powershell
@@ -44,7 +44,7 @@ A powerful, open-source Discord bot for scheduling games and events within your 
 
 1. **Clone/Download** this repository:
    ```sh
-   git clone https://github.com/ceejay/comp-sched-bot.git
+   git clone https://github.com/Jonesyboy07/team-organizer.git
    ```
 2. **Install dependencies:**
    ```sh
@@ -86,7 +86,7 @@ Please keep original creditation somewhere in your version.
 
 ## 💬 **Suggestions & Support**
 
-- [Open an Issue](https://github.com/Jonesyboy07/comp-sched-bot/issues) for feature requests or bug reports.
+- [Open an Issue](https://github.com/Jonesyboy07/team-organizer/issues) for feature requests or bug reports.
 - [Support on Ko-Fi](https://ko-fi.com/jonesy_alr) if you’d like to help out!
 
 ---
