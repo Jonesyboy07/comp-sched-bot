@@ -86,7 +86,7 @@ Please keep original creditation somewhere in your version.
 
 ## 💬 **Suggestions & Support**
 
-- [Open an Issue](https://github.com/ceejay/comp-sched-bot/issues) for feature requests or bug reports.
+- [Open an Issue](https://github.com/Jonesyboy07/comp-sched-bot/issues) for feature requests or bug reports.
 - [Support on Ko-Fi](https://ko-fi.com/jonesy_alr) if you’d like to help out!
 
 ---
