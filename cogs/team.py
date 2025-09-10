@@ -5,14 +5,7 @@ from utils.funcs import ReadJSON, WriteJSON, CheckIfAdminRole
 import math
 
 # ---------- CONSTANTS ----------
-MAJOR_TIMEZONES = [
-    "UTC", "London", "New York", "Los Angeles", "Chicago", "Denver", "Phoenix", "Toronto",
-    "Mexico City", "Buenos Aires", "Rio de Janeiro", "Santiago", "Vancouver", "Honolulu",
-    "Anchorage", "Paris", "Berlin", "Madrid", "Rome", "Moscow", "Istanbul", "Dubai",
-    "Jerusalem", "Johannesburg", "Cairo", "Nairobi", "Mumbai", "Delhi", "Bangkok",
-    "Singapore", "Hong Kong", "Shanghai", "Tokyo", "Seoul", "Sydney", "Melbourne",
-    "Auckland", "Brisbane", "Perth", "Jakarta"
-]
+from utils.constants import MAJOR_TIMEZONES
 
 # ---------- DELETE TEAM ----------
 

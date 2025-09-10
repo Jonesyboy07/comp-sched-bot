@@ -11,11 +11,6 @@ token = os.getenv("DISCORD_TOKEN")
 clientid = os.getenv("DISCORD_CLIENT_ID")
 prefix = os.getenv("PREFIX", "!")
 
-invite_link = os.getenv("INVITE_LINK")
-
-print(invite_link)
-
-
 intents = discord.Intents.default()
 intents.guilds = True
 intents.members = True

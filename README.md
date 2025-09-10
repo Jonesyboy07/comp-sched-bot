@@ -1,44 +1,103 @@
-# Game Schedule Bot
+# 🎮 **Game Schedule Bot**
 
-A simple bot that allows users to schedule games within their teams!
+A powerful, open-source Discord bot for scheduling games and events within your teams!
 
-## **Features**:
+---
 
-- Allow the "Administrator" of a server to set the initial server up.
-- Add basic commands, with help system detailing each command
-- More Soon!
+## 🚀 **Features**
 
-### **Open Source**:
+✨ **Easy Setup:** Server administrators can quickly set up the bot with a single command.  
+🗓️ **Team Scheduling:** Create, manage, and RSVP to team events with timezone support.  
+❓ **Help System:** Built-in help command with detailed usage for every feature.  
+🔓 **Open Source:** Freely clone, modify, and contribute!  
+💸 **No Paywalls:** 100% free to use. [Support development on Ko-Fi!](https://ko-fi.com/jonesy_alr)
 
-Some people may want to add their own features, and want these for themselves. Due to this, most of the source code is open. If you wish to replicate this, I kindly ask that you keep in my creditation in some way. This is a project I have tried multiple times and fight dearly for.
+---
 
-You are free to clone this repo and run it yourself, check for more details on this further below.
+## 📦 **Installation & Usage**
 
-### **Pricing**: 
+### 🖥️ Windows Setup
 
-With other projects *cough cough* *no names here* *cough cough* requiring a user to **pay** for using their project, i wanted to make a **free** version. This wont cost at all, but donations are welcome on my [Ko-Fi](https://ko-fi.com/jonesy_alr) page.
+1. **Clone/Download** this repository:
+   ```powershell
+   git clone https://github.com/ceejay/comp-sched-bot.git
+   ```
+2. **Install dependencies:**
+   ```powershell
+   py -m pip install -r requirements.txt
+   ```
+3. **Configure environment:**
+   - Edit `.env.example` and rename to `.env`.
+4. **Prepare data files:**
+   ```powershell
+   py prereq.py
+   ```
+5. **Customize commands:**
+   - Edit `data/commands.json` for your project needs.
+6. **Run the bot:**
+   ```powershell
+   py main.py
+   ```
 
-### How to run independently
+### 🐧 Linux/Mac Setup
 
-1. Clone/Download the project.
+1. **Clone/Download** this repository:
+   ```sh
+   git clone https://github.com/ceejay/comp-sched-bot.git
+   ```
+2. **Install dependencies:**
+   ```sh
+   pip install -r requirements.txt
+   ```
+3. **Configure environment:**
+   - Edit `.env.example` and rename to `.env`.
+4. **Prepare data files:**
+   ```sh
+   python prereq.py
+   ```
+5. **Customize commands:**
+   - Edit `data/commands.json` for your project needs.
+6. **Run the bot:**
+   ```sh
+   python main.py
+   ```
 
-2. Run `pip install -r requirements.txt` within the folder to install all required packages.
+---
 
-3. Edit the `.env.example` and rename to `.env`.
+## 💡 **Notes**
 
-4. Run the `prereq.py` file to ensure any JSON files needed are made.
+- Most of this code is handwritten. AI was used to:
+  - 🛠️ Fix errors
+  - ⚡ Implement complex features
+  - 🚀 Streamline important parts
 
-5. Edit the `data/commands.json` with adequate descriptions for your project.
+- The project is open for suggestions and contributions!
 
-6. Run `main.py` to start the bot!
+---
 
+## 🤝 **Contributing**
 
-### Notes:
+Want to add features or fix bugs?  
+**Fork** the repo, make your changes, and submit a **pull request**!  
+Please keep original creditation somewhere in your version.
 
-The majority of this code is handwritten. In some places, AI was used to:
+---
 
-- Fix errors
+## 💬 **Suggestions & Support**
 
-- Implement complicated features
+- [Open an Issue](https://github.com/ceejay/comp-sched-bot/issues) for feature requests or bug reports.
+- [Support on Ko-Fi](https://ko-fi.com/jonesy_alr) if you’d like to help out!
 
-- Streamline important parts
+---
+
+## 📝 **License & Credit**
+
+This project is open source and free to use.  
+If you fork or use this bot, please keep credit to the original author.
+
+---
+
+<div align="center">
+
+**Thank you for checking out Game Schedule Bot!**  
+Made with ❤️ for the Discord gaming

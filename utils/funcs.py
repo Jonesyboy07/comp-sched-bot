@@ -62,3 +62,23 @@ def WriteJSON(data, filename, indent=4):
     """
     with open(filename, 'w') as f:
         json.dump(data, f, indent=indent)
+        
+def CheckIfTeamCaptain(role_ids, guild_id, team_name):
+    """Check the Server JSON to see if any of the given role IDs are team captain roles.
+
+    Args:
+        role_ids (array[int]): The role ID's of the user to check.
+        guild_id (int): The guild/server ID to check.
+        team_name (str): The name of the team to check."""
+    filename = "data/servers.json"
+    if not path.exists(filename):
+        return False
+    data = ReadJSON(filename)
+    if str(guild_id) in data:
+        teams = data[str(guild_id)].get("teams", [])
+        for team in teams:
+            if team.get("team_name") == team_name:
+                for role_id in role_ids:
+                    if team.get("team_cap_role") == role_id:
+                        return True
+    return False

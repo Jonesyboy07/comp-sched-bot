@@ -1,0 +1,101 @@
+{
+    "sections": [
+        {
+            "name": "Setup",
+            "commands": [
+                {
+                    "name": "setup",
+                    "description": "Sets up the bot in the server.",
+                    "usage": "/setup BotChannel:<channel> AdminRole:<role>",
+                    "admin_required": true
+                }
+            ]
+        },
+        {
+            "name": "General",
+            "commands": [
+                {
+                    "name": "help",
+                    "description": "Prompts this message!",
+                    "usage": "/help",
+                    "admin_required": false
+                },
+                {
+                    "name": "info",
+                    "description": "Shows information about the bot!",
+                    "usage": "/info",
+                    "admin_required": false
+                },
+                {
+                    "name": "invite",
+                    "description": "Get the bot's invite link!",
+                    "usage": "/invite",
+                    "admin_required": false
+                },
+                {
+                    "name": "version",
+                    "description": "Shows the current version of the bot!",
+                    "usage": "/version",
+                    "admin_required": false
+                },
+                {
+                    "name": "ping",
+                    "description": "Check the bot's latency!",
+                    "usage": "/ping",
+                    "admin_required": false
+                }
+            ]
+        },
+        {
+            "name": "Teams",
+            "commands": [
+                {
+                    "name": "create_team",
+                    "description": "Create a new team in this server.",
+                    "usage": "/create_team team_name:<name> game:<game> team_cap_role:<role> team_schedule_channel:<channel> timezone:<timezone>",
+                    "admin_required": true
+                },
+                {
+                    "name": "list_teams",
+                    "description": "List all teams in this server.",
+                    "usage": "/list_teams per_page:<number>",
+                    "admin_required": true
+                },
+                {
+                    "name": "delete_team",
+                    "description": "Delete a team from this server.",
+                    "usage": "/delete_team",
+                    "admin_required": true
+                },
+                {
+                    "name": "modify_team",
+                    "description": "Modify an existing team's details.",
+                    "usage": "/modify_team",
+                    "admin_required": true
+                }
+            ]
+        },
+        {
+            "name": "Scheduling",
+            "commands": [
+                {
+                    "name": "send_schedule",
+                    "description": "Send a scheduling message for a team (admin or team captain only).",
+                    "usage": "/send_schedule",
+                    "admin_required": true
+                }
+            ]
+        },
+        {
+            "name": "Event",
+            "commands": [
+                {
+                    "name": "event",
+                    "description": "Create a team event with RSVP buttons.",
+                    "usage": "/event team_name:<team> date:<YYYY-MM-DD> time:<hhmm> event_name:<name>",
+                    "admin_required": true
+                }
+            ]
+        }
+    ]
+}
