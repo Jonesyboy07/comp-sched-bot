@@ -1,5 +1,8 @@
 from discord.ext import commands
 from utils.funcs import ReadJSON
+import os
+
+OWNER_ID = int(os.getenv("OWNER_ID", "0"))
 
 class UpdateCog(commands.Cog):
     def __init__(self, bot):
@@ -7,6 +10,9 @@ class UpdateCog(commands.Cog):
 
     @commands.command(name="update", help="Send the latest update from data/update.txt to all update logs channels in every server.")
     async def update(self, ctx):
+        if ctx.author.id != OWNER_ID:
+            return
+
         servers = ReadJSON("data/servers.json")
 
         try:
