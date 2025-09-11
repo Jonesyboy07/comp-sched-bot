@@ -97,9 +97,8 @@ class TeamFieldDropdownLoop(discord.ui.Select):
         options = [
             discord.SelectOption(label="Team Name", value="team_name"),
             discord.SelectOption(label="Game", value="game"),
-            discord.SelectOption(label="Captain Role", value="team_cap_role"),
-            discord.SelectOption(label="Team Role", value="team_role"),
-            discord.SelectOption(label="Team Role ID", value="team_role_id"),
+            discord.SelectOption(label="Team Captain", value="team_captain_id"),
+            discord.SelectOption(label="Team Role", value="team_role_id"),
             discord.SelectOption(label="Schedule Channel", value="team_schedule_channel"),
             discord.SelectOption(label="Timezone", value="timezone")
         ]
@@ -108,11 +107,16 @@ class TeamFieldDropdownLoop(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         field = self.values[0]
         team = self.teams[self.team_idx]
-
         view = discord.ui.View()
 
-        # Roles
-        if field in ["team_cap_role", "team_role", "team_role_id"]:
+        # Team Captain
+        if field == "team_captain_id":
+            member_options = [discord.SelectOption(label=m.display_name, value=str(m.id)) for m in self.guild.members]
+            member_select = MemberSelectLoop(self.teams, self.team_idx, field, member_options, self.parent_view)
+            view.add_item(member_select)
+
+        # Team Role
+        elif field == "team_role_id":
             role_options = [discord.SelectOption(label=r.name, value=str(r.id)) for r in self.guild.roles]
             role_select = RoleSelectLoop(self.teams, self.team_idx, field, role_options, self.parent_view)
             view.add_item(role_select)
@@ -181,8 +185,8 @@ class RoleSelectLoop(discord.ui.Select):
         servers[guild_id] = current_server
         WriteJSON(servers, "data/servers.json")
         role = interaction.guild.get_role(new_role_id)
-        await log_to_discord(interaction.client, guild_id, f"Updated {self.field} for team '{team['team_name']}' to role '{role.name}' by {interaction.user} ({interaction.user.id})")
-        await interaction.response.send_message(f"Updated **{self.field.replace('_',' ').title()}** to **{role.name}** for team **{team['team_name']}**.", ephemeral=True)
+        await log_to_discord(interaction.client, guild_id, f"Updated {self.field} for team '{team['team_name']}' to role '{role.name if role else new_role_id}' by {interaction.user} ({interaction.user.id})")
+        await interaction.response.send_message(f"Updated **Team Role** to **{role.mention if role else new_role_id}** for team **{team['team_name']}**.", ephemeral=True)
         await interaction.edit_original_response(view=self.parent_view)
 
 class ChannelSelectLoop(discord.ui.Select):
@@ -371,14 +375,14 @@ class TeamListView(discord.ui.View):
         start = self.page * self.per_page
         end = start + self.per_page
         for team in self.teams[start:end]:
-            team_cap_role = self.interaction.guild.get_role(team["team_cap_role"])
-            team_role = self.interaction.guild.get_role(team["team_role"])
+            team_captain = self.interaction.guild.get_member(team.get("team_captain_id"))
+            team_role = self.interaction.guild.get_role(team.get("team_role_id"))
             team_schedule_channel = self.interaction.guild.get_channel(team["team_schedule_channel"])
             embed.add_field(
                 name=team["team_name"],
                 value=(
                     f"Game: {team['game']}\n"
-                    f"Team Cap Role: {team_cap_role.mention if team_cap_role else 'Role not found'}\n"
+                    f"Team Captain: {team_captain.mention if team_captain else 'User not found'}\n"
                     f"Team Role: {team_role.mention if team_role else 'Role not found'}\n"
                     f"Schedule Channel: {team_schedule_channel.mention if team_schedule_channel else 'Channel not found'}\n"
                     f"Timezone: {team['timezone']}\n"
@@ -409,7 +413,8 @@ class TeamCog(commands.Cog):
         interaction: discord.Interaction,
         team_name: str,
         game: str,
-        team_cap_role: discord.Role,
+        team_captain: discord.Member,
+        team_role: discord.Role,
         team_schedule_channel: discord.TextChannel,
         timezone: str
     ):
@@ -425,13 +430,11 @@ class TeamCog(commands.Cog):
             await interaction.response.send_message("Bot not setup yet.", ephemeral=True)
             return
         teams = current_server.get("teams", [])
-        team_role = team_cap_role.id
         team_data = {
             "team_name": team_name,
             "game": game,
-            "team_cap_role": team_cap_role.id,
-            "team_role": team_role,
-            "team_role_id": team_role,
+            "team_captain_id": team_captain.id,
+            "team_role_id": team_role.id,
             "team_schedule_channel": team_schedule_channel.id,
             "timezone": timezone,
             "created_at": str(interaction.created_at)
@@ -443,7 +446,7 @@ class TeamCog(commands.Cog):
         WriteJSON(all_servers, "data/servers.json")
         await log_to_discord(self.bot, guild_id, f"Team '{team_name}' created for '{game}' by {interaction.user} ({interaction.user.id})")
         await interaction.response.send_message(
-            f"Team '{team_name}' created for '{game}'. Captain: {team_cap_role.mention}, Channel: {team_schedule_channel.mention}, Timezone: {timezone}",
+            f"Team '{team_name}' created for '{game}'. Captain: {team_captain.mention}, Role: {team_role.mention}, Channel: {team_schedule_channel.mention}, Timezone: {timezone}",
             ephemeral=True
         )
 
@@ -499,9 +502,12 @@ class TeamCog(commands.Cog):
         current_server = ReadJSON("data/servers.json").get(guild_id, {})
         teams = current_server.get("teams", [])
         if not teams:
-            await log_to_discord(self.bot, guild_id, f"modify_team: no teams to modify by {interaction.user} ({interaction.user.id})")
-            await interaction.response.send_message("No teams to modify.", ephemeral=True)
+            await log_to_discord(self.bot, guild_id, f"modify_team: no teams found by {interaction.user} ({interaction.user.id})")
+            await interaction.response.send_message("No teams found.", ephemeral=True)
             return
         view = TeamModifyView(teams, interaction.guild, 0)
         await log_to_discord(self.bot, guild_id, f"Team modify view sent by {interaction.user} ({interaction.user.id})")
-        await interaction.response.send_message("Select a team to modify:", view=view, ephemeral=True)
+        await interaction.response.send_message(content=f"Modify team: **{teams[0]['team_name']}**", view=view, ephemeral=True)
+
+async def setup(bot: commands.Bot):
+    await bot.add_cog(TeamCog(bot))

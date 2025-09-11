@@ -159,7 +159,7 @@ class EventCog(commands.Cog):
             await log_to_discord(self.bot, guild_id, f"Event creation failed: schedule channel not found for team '{team_name}' by {interaction.user} ({interaction.user.id})")
             return await interaction.response.send_message("Team schedule channel not found. Please notify a server admin to check.", ephemeral=True)
 
-        team_role_id = team.get("team_role")
+        team_role_id = team.get("team_role_id")
         team_role_mention = f"<@&{team_role_id}>" if team_role_id else ""
 
         embed = discord.Embed(
