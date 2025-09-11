@@ -369,3 +369,50 @@ Run /help to see a list of commands and how to utilize them.""",
             f"Role <@&{RoleID}> has been removed from admin roles.",
             ephemeral=True
         )
+        
+    @app_commands.command(name="setbotlogchannel", description="Set or change the bot logging channel.")
+    async def set_bot_log_channel(
+        self,
+        interaction: discord.Interaction,
+        channel: discord.TextChannel
+    ):
+        GuildID = str(interaction.guild.id)
+        # Check if user has admin role
+        if not CheckIfAdminRole([role.id for role in interaction.user.roles], interaction.guild.id):
+            await log_to_discord(self.bot, GuildID, f"Unauthorized setbotlogchannel attempt by {interaction.user} ({interaction.user.id})")
+            return await interaction.response.send_message(
+                "You do not have permission to use this command.",
+                ephemeral=True
+            )
+
+        filename = "data/servers.json"
+        try:
+            data = ReadJSON(filename)
+        except FileNotFoundError:
+            data = {}
+
+        # If server not setup, create minimal entry
+        if GuildID not in data:
+            data[GuildID] = {"SetupComplete": False}
+
+        # If bot_logs_channel key doesn't exist, create it
+        if "bot_logs_channel" not in data[GuildID]:
+            data[GuildID]["bot_logs_channel"] = None
+
+        if not data[GuildID].get("SetupComplete", False):
+            await log_to_discord(self.bot, GuildID, f"setbotlogchannel failed: setup incomplete ({interaction.user.id})")
+            return await interaction.response.send_message(
+                "Server is not set up yet. Please run /setup first.",
+                ephemeral=True
+            )
+
+        old_channel = data[GuildID].get("bot_logs_channel")
+        data[GuildID]["bot_logs_channel"] = str(channel.id)
+        WriteJSON(data, filename, indent=4)
+
+        await log_to_discord(self.bot, GuildID, f"Bot log channel changed from {old_channel} to {channel.id} by {interaction.user} ({interaction.user.id})")
+        await interaction.response.send_message(
+            f"Bot log channel set to <#{channel.id}>.",
+            ephemeral=True
+        )
+
