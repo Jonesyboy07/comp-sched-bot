@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from utils.funcs import ReadJSON, WriteJSON, CheckIfAdminRole
+from utils.funcs import ReadJSON, WriteJSON, CheckIfAdminRole, log_to_discord
 import math
 
 # ---------- CONSTANTS ----------
@@ -26,6 +26,7 @@ class TeamDeleteDropdown(discord.ui.Select):
         current_server["teams"] = teams
         servers[guild_id] = current_server
         WriteJSON(servers, "data/servers.json")
+        await log_to_discord(interaction.client, guild_id, f"Team '{team['team_name']}' deleted by {interaction.user} ({interaction.user.id})")
         await interaction.response.edit_message(content=f"Team '{team['team_name']}' deleted.", view=None, embed=None)
 
 class TeamDeleteView(discord.ui.View):
@@ -180,6 +181,7 @@ class RoleSelectLoop(discord.ui.Select):
         servers[guild_id] = current_server
         WriteJSON(servers, "data/servers.json")
         role = interaction.guild.get_role(new_role_id)
+        await log_to_discord(interaction.client, guild_id, f"Updated {self.field} for team '{team['team_name']}' to role '{role.name}' by {interaction.user} ({interaction.user.id})")
         await interaction.response.send_message(f"Updated **{self.field.replace('_',' ').title()}** to **{role.name}** for team **{team['team_name']}**.", ephemeral=True)
         await interaction.edit_original_response(view=self.parent_view)
 
@@ -202,6 +204,7 @@ class ChannelSelectLoop(discord.ui.Select):
         servers[guild_id] = current_server
         WriteJSON(servers, "data/servers.json")
         channel = interaction.guild.get_channel(new_channel_id)
+        await log_to_discord(interaction.client, guild_id, f"Updated {self.field} for team '{team['team_name']}' to channel '{channel.name}' by {interaction.user} ({interaction.user.id})")
         await interaction.response.send_message(f"Updated **{self.field.replace('_',' ').title()}** to **{channel.name}** for team **{team['team_name']}**.", ephemeral=True)
         await interaction.edit_original_response(view=self.parent_view)
 
@@ -290,6 +293,7 @@ class TimezoneSelectDropdown(discord.ui.Select):
         current_server["teams"] = self.teams
         servers[guild_id] = current_server
         WriteJSON(servers, "data/servers.json")
+        await log_to_discord(interaction.client, guild_id, f"Updated timezone for team '{team['team_name']}' to '{tz}' by {interaction.user} ({interaction.user.id})")
         await interaction.response.send_message(f"Updated timezone for **{team['team_name']}** to `{tz}`.", ephemeral=True)
         await interaction.edit_original_response(view=self.parent_view)
 
@@ -312,6 +316,7 @@ class TeamModifyModalLoop(discord.ui.Modal):
         current_server["teams"] = self.teams
         servers[guild_id] = current_server
         WriteJSON(servers, "data/servers.json")
+        await log_to_discord(interaction.client, guild_id, f"Updated {self.field} for team '{team['team_name']}' to '{new_value}' by {interaction.user} ({interaction.user.id})")
         await interaction.response.send_message(f"Updated **{self.field.replace('_',' ').title()}** to `{new_value}` for team **{team['team_name']}**.", ephemeral=True)
 
 # ---------- LIST TEAMS ----------
@@ -411,10 +416,12 @@ class TeamCog(commands.Cog):
         guild_id = str(interaction.guild_id)
         user_roles = [role.id for role in interaction.user.roles]
         if not CheckIfAdminRole(user_roles, guild_id):
+            await log_to_discord(self.bot, guild_id, f"Unauthorized create_team attempt by {interaction.user} ({interaction.user.id})")
             await interaction.response.send_message("You do not have permission.", ephemeral=True)
             return
         current_server = ReadJSON("data/servers.json").get(guild_id, {})
         if not current_server.get("SetupComplete", False):
+            await log_to_discord(self.bot, guild_id, f"create_team failed: bot not setup by {interaction.user} ({interaction.user.id})")
             await interaction.response.send_message("Bot not setup yet.", ephemeral=True)
             return
         teams = current_server.get("teams", [])
@@ -434,6 +441,7 @@ class TeamCog(commands.Cog):
         all_servers = ReadJSON("data/servers.json")
         all_servers[guild_id] = current_server
         WriteJSON(all_servers, "data/servers.json")
+        await log_to_discord(self.bot, guild_id, f"Team '{team_name}' created for '{game}' by {interaction.user} ({interaction.user.id})")
         await interaction.response.send_message(
             f"Team '{team_name}' created for '{game}'. Captain: {team_cap_role.mention}, Channel: {team_schedule_channel.mention}, Timezone: {timezone}",
             ephemeral=True
@@ -445,17 +453,21 @@ class TeamCog(commands.Cog):
         guild_id = str(interaction.guild_id)
         user_roles = [role.id for role in interaction.user.roles]
         if not CheckIfAdminRole(user_roles, guild_id):
+            await log_to_discord(self.bot, guild_id, f"Unauthorized list_teams attempt by {interaction.user} ({interaction.user.id})")
             await interaction.response.send_message("You do not have permission.", ephemeral=True)
             return
         current_server = ReadJSON("data/servers.json").get(guild_id, {})
         if not current_server.get("SetupComplete", False):
+            await log_to_discord(self.bot, guild_id, f"list_teams failed: bot not setup by {interaction.user} ({interaction.user.id})")
             await interaction.response.send_message("Bot not setup yet.", ephemeral=True)
             return
         teams = current_server.get("teams", [])
         if not teams:
+            await log_to_discord(self.bot, guild_id, f"list_teams: no teams found by {interaction.user} ({interaction.user.id})")
             await interaction.response.send_message("No teams.", ephemeral=True)
             return
         view = TeamListView(teams, interaction, per_page=per_page)
+        await log_to_discord(self.bot, guild_id, f"Teams listed by {interaction.user} ({interaction.user.id})")
         await interaction.response.send_message(embed=view.get_embed(), view=view, ephemeral=True)
 
     @app_commands.command(name="delete_team", description="Delete a team from this server.")
@@ -463,14 +475,17 @@ class TeamCog(commands.Cog):
         guild_id = str(interaction.guild_id)
         user_roles = [role.id for role in interaction.user.roles]
         if not CheckIfAdminRole(user_roles, guild_id):
+            await log_to_discord(self.bot, guild_id, f"Unauthorized delete_team attempt by {interaction.user} ({interaction.user.id})")
             await interaction.response.send_message("No permission.", ephemeral=True)
             return
         current_server = ReadJSON("data/servers.json").get(guild_id, {})
         teams = current_server.get("teams", [])
         if not teams:
+            await log_to_discord(self.bot, guild_id, f"delete_team: no teams to delete by {interaction.user} ({interaction.user.id})")
             await interaction.response.send_message("No teams to delete.", ephemeral=True)
             return
         view = TeamDeleteView(teams)
+        await log_to_discord(self.bot, guild_id, f"Team delete view sent by {interaction.user} ({interaction.user.id})")
         await interaction.response.send_message("Select a team to delete:", view=view, ephemeral=True)
 
     @app_commands.command(name="modify_team", description="Modify a team's details.")
@@ -478,12 +493,15 @@ class TeamCog(commands.Cog):
         guild_id = str(interaction.guild_id)
         user_roles = [role.id for role in interaction.user.roles]
         if not CheckIfAdminRole(user_roles, guild_id):
+            await log_to_discord(self.bot, guild_id, f"Unauthorized modify_team attempt by {interaction.user} ({interaction.user.id})")
             await interaction.response.send_message("No permission.", ephemeral=True)
             return
         current_server = ReadJSON("data/servers.json").get(guild_id, {})
         teams = current_server.get("teams", [])
         if not teams:
+            await log_to_discord(self.bot, guild_id, f"modify_team: no teams to modify by {interaction.user} ({interaction.user.id})")
             await interaction.response.send_message("No teams to modify.", ephemeral=True)
             return
         view = TeamModifyView(teams, interaction.guild, 0)
+        await log_to_discord(self.bot, guild_id, f"Team modify view sent by {interaction.user} ({interaction.user.id})")
         await interaction.response.send_message("Select a team to modify:", view=view, ephemeral=True)

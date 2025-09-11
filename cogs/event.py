@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from utils.funcs import ReadJSON
+from utils.funcs import ReadJSON, log_to_discord
 from utils.constants import TIMEZONE_MAP
 from datetime import datetime
 import pytz
@@ -74,12 +74,15 @@ class EventCog(commands.Cog):
         # Add user to the selected list
         if emoji == ATTEND_EMOJI:
             event_data["attend"].append(interaction.user.id)
+            await log_to_discord(self.bot, guild_id, f"{interaction.user} ({interaction.user.id}) RSVP'd as Can Attend for event {event_data.get('event_name', '')}")
             await interaction.response.send_message("You've RSVP'd as **Can Attend**.", ephemeral=True)
         elif emoji == MAYBE_EMOJI:
             event_data["maybe"].append(interaction.user.id)
+            await log_to_discord(self.bot, guild_id, f"{interaction.user} ({interaction.user.id}) RSVP'd as Maybe for event {event_data.get('event_name', '')}")
             await interaction.response.send_message("You've RSVP'd as **May be able to**.", ephemeral=True)
         elif emoji == CANT_EMOJI:
             event_data["cant"].append(interaction.user.id)
+            await log_to_discord(self.bot, guild_id, f"{interaction.user} ({interaction.user.id}) RSVP'd as Can't Attend for event {event_data.get('event_name', '')}")
             await interaction.response.send_message("You've RSVP'd as **Can't Attend**.", ephemeral=True)
 
         events[str(message_id)] = event_data
@@ -127,6 +130,7 @@ class EventCog(commands.Cog):
         teams = ReadJSON("data/servers.json").get(guild_id, {}).get("teams", [])
         team = next((t for t in teams if t["team_name"].lower() == team_name.lower()), None)
         if not team:
+            await log_to_discord(self.bot, guild_id, f"Event creation failed: team '{team_name}' not found by {interaction.user} ({interaction.user.id})")
             await interaction.response.send_message("Team not found.", ephemeral=True)
             return
 
@@ -143,6 +147,7 @@ class EventCog(commands.Cog):
             event_dt = event_date.replace(hour=event_time.hour, minute=event_time.minute)
             event_dt = tz.localize(event_dt)
         except Exception:
+            await log_to_discord(self.bot, guild_id, f"Event creation failed: invalid date/time format by {interaction.user} ({interaction.user.id})")
             await interaction.response.send_message("Invalid date or time format. Date must be YYYY-MM-DD, time must be hhmm (24hr).", ephemeral=True)
             return
 
@@ -151,6 +156,7 @@ class EventCog(commands.Cog):
         channel_id = team.get("team_schedule_channel")
         channel = interaction.guild.get_channel(channel_id)
         if not channel:
+            await log_to_discord(self.bot, guild_id, f"Event creation failed: schedule channel not found for team '{team_name}' by {interaction.user} ({interaction.user.id})")
             return await interaction.response.send_message("Team schedule channel not found. Please notify a server admin to check.", ephemeral=True)
 
         team_role_id = team.get("team_role")
@@ -172,6 +178,7 @@ class EventCog(commands.Cog):
 
         message_obj = await channel.send(content=team_role_mention, embed=embed, view=EventRSVPView(self, None))
         await message_obj.edit(view=EventRSVPView(self, message_obj.id))
+        await log_to_discord(self.bot, guild_id, f"Event '{event_name}' created for team '{team_name}' by {interaction.user} ({interaction.user.id}) in channel {channel.mention}")
         await interaction.response.send_message(f"Event created in {channel.mention}", ephemeral=True)
 
         # Save event info under guild_id and message.id
@@ -203,8 +210,10 @@ class EventCog(commands.Cog):
         await self.update_embed(interaction.message, event_data)
 
         if removed:
+            await log_to_discord(self.bot, guild_id, f"{interaction.user} ({interaction.user.id}) removed their attendance for event {event_data.get('event_name', '')}")
             await interaction.response.send_message("Your attendance has been removed.", ephemeral=True)
         else:
+            await log_to_discord(self.bot, guild_id, f"{interaction.user} ({interaction.user.id}) attempted to remove attendance but was not signed up for event {event_data.get('event_name', '')}")
             await interaction.response.send_message("You were not signed up for this event.", ephemeral=True)
 
 

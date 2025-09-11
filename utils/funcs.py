@@ -82,3 +82,16 @@ def CheckIfTeamCaptain(role_ids, guild_id, team_name):
                     if team.get("team_cap_role") == role_id:
                         return True
     return False
+
+async def log_to_discord(bot, guild_id, message):
+    """Send a log message to the bot_logs_channel for the given guild."""
+    data = ReadJSON("data/servers.json")
+    channel_id = data.get(str(guild_id), {}).get("bot_logs_channel")
+    if channel_id:
+        guild = bot.get_guild(int(guild_id))
+        if guild:
+            channel = guild.get_channel(int(channel_id))
+            if channel:
+                await channel.send(f"[LOG] {message}")
+                return True
+    return False

@@ -10,6 +10,7 @@ class UpdateCog(commands.Cog):
 
     @commands.command(name="update", help="Send the latest update from data/update.txt to all update logs channels in every server.")
     async def update(self, ctx):
+        print("Update command invoked by user:", ctx.author.id)
         if ctx.author.id != OWNER_ID:
             return
 

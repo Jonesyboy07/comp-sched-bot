@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands, tasks
 from discord import app_commands
-from utils.funcs import WriteJSON, ReadJSON, CheckIfAdminRole
+from utils.funcs import WriteJSON, ReadJSON, CheckIfAdminRole, log_to_discord
 from datetime import datetime, timedelta
 import pytz
 import asyncio
@@ -83,6 +83,7 @@ class TeamScheduleDropdown(discord.ui.Select):
         channel_id = team.get("team_schedule_channel")
         channel = interaction.guild.get_channel(channel_id)
         if not channel:
+            await log_to_discord(self.view.bot, str(interaction.guild_id), f"Schedule channel not found for team {team['team_name']} by {interaction.user} ({interaction.user.id})")
             await interaction.followup.send("Schedule channel not found.", ephemeral=True)
             return
 
@@ -90,6 +91,7 @@ class TeamScheduleDropdown(discord.ui.Select):
         team_role_mention = f"<@&{team_role_id}>" if team_role_id else ""
 
         await send_weekly_schedule_messages(channel, team_role_mention, monday)
+        await log_to_discord(self.view.bot, str(interaction.guild_id), f"Weekly scheduling messages sent for team {team['team_name']} by {interaction.user} ({interaction.user.id})")
 
         # Update last_synced for today (Monday)
         today_str = now.strftime("%Y-%m-%d")
@@ -107,6 +109,8 @@ class TeamScheduleView(discord.ui.View):
         super().__init__(timeout=60)
         self.teams = teams
         self.add_item(TeamScheduleDropdown(teams))
+        # Pass bot instance for logging
+        self.bot = None
 
 class ScheduleCog(commands.Cog):
     def __init__(self, bot):
@@ -151,6 +155,7 @@ class ScheduleCog(commands.Cog):
                             team_role_mention = f"<@&{team_role_id}>" if team_role_id else ""
                             date_str = now.strftime("%A: The %d of %B")
                             await send_schedule_message(channel, team_role_mention, date_str)
+                            await log_to_discord(self.bot, guild_id, f"Automated weekly schedule sent for team {team['team_name']} in guild {guild_id}")
                             # Update last_synced
                             data = update_last_synced(data, guild_id, idx, today_str)
                             updated = True
@@ -165,10 +170,12 @@ class ScheduleCog(commands.Cog):
         servers = ReadJSON("data/servers.json")
         current_server = servers.get(guild_id, {})
         if not current_server.get("SetupComplete", False):
+            await log_to_discord(self.bot, guild_id, f"send_schedule failed: bot not setup by {interaction.user} ({interaction.user.id})")
             await interaction.response.send_message("Bot not setup yet.", ephemeral=True)
             return
         teams = current_server.get("teams", [])
         if not teams:
+            await log_to_discord(self.bot, guild_id, f"send_schedule failed: no teams found by {interaction.user} ({interaction.user.id})")
             await interaction.response.send_message("No teams found.", ephemeral=True)
             return
 
@@ -178,11 +185,14 @@ class ScheduleCog(commands.Cog):
             if CheckIfAdminRole(user_roles, guild_id) or team.get("team_cap_role") in user_roles:
                 allowed_team_idxs.append(idx)
         if not allowed_team_idxs:
+            await log_to_discord(self.bot, guild_id, f"send_schedule failed: no permission for any team by {interaction.user} ({interaction.user.id})")
             await interaction.response.send_message("You do not have permission to send scheduling for any team.", ephemeral=True)
             return
 
         allowed_teams = [teams[idx] for idx in allowed_team_idxs]
         view = TeamScheduleView(allowed_teams)
+        view.bot = self.bot  # Pass bot instance for logging in dropdown
+        await log_to_discord(self.bot, guild_id, f"send_schedule command used by {interaction.user} ({interaction.user.id})")
         await interaction.response.send_message("Select a team to send scheduling for:", view=view, ephemeral=True)
 
 async def send_schedule_message(channel, team_role_mention, date_str):
