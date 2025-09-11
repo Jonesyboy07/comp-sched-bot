@@ -10,13 +10,19 @@ def get_previous_monday(dt):
     # If today is Monday, return today; else, return previous Monday
     return dt - timedelta(days=dt.weekday())
 
-def build_intro_embed(team_role_mention, start_date):
-    clock_emojis = get_clock_emojis()
-    time_labels = [
-        "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM",
-        "8 PM", "9 PM", "10 PM", "11 PM"
+def get_number_emojis():
+    """Returns the list of number emojis for 1 to 10."""
+    return [
+        "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"
     ]
-    times_str = "\n".join([f"{emoji} = {label}" for emoji, label in zip(clock_emojis, time_labels)])
+
+def build_intro_embed(team_role_mention, start_date):
+    number_emojis = get_number_emojis()
+    time_labels = [
+        "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM",
+        "9 PM", "10 PM"
+    ]
+    times_str = "\n".join([f"{emoji} = {label}" for emoji, label in zip(number_emojis, time_labels)])
     embed = discord.Embed(
         title="Weekly Scheduling",
         description=(
@@ -24,8 +30,8 @@ def build_intro_embed(team_role_mention, start_date):
             f"**{start_date.strftime('%A: The %d of %B')}**\n\n"
             "Scheduling for this week!\n"
             "Each day will have a message for you to react to, indicating your availability for that day.\n"
-            "Time slots run from **12 PM to 11:59 PM**.\n"
-            "React to each day's message using the clock emojis below:\n\n"
+            "Time slots run from **1 PM to 10 PM**.\n"
+            "React to each day's message using the number emojis below:\n\n"
             f"{times_str}\n"
         ),
         color=discord.Color.blue()
@@ -41,14 +47,14 @@ async def send_weekly_schedule_messages(channel, team_role_mention, start_date):
     embed = build_intro_embed(team_role_mention, start_date)
     await channel.send(content=team_role_mention, embed=embed)
 
-    clock_emojis = get_clock_emojis()
+    number_emojis = get_number_emojis()
     # Send a message for each day (Monday to Sunday), no ping
     for i in range(7):
         day_date = start_date + timedelta(days=i)
         day_str = day_date.strftime("%A: The %d of %B")
         msg_content = build_day_message(day_str)
         message = await channel.send(msg_content)
-        for emoji in clock_emojis:
+        for emoji in number_emojis:
             await message.add_reaction(emoji)
 
 def update_last_synced(servers, guild_id, team_idx, today_str):
@@ -197,25 +203,8 @@ class ScheduleCog(commands.Cog):
 
 async def send_schedule_message(channel, team_role_mention, date_str):
     msg_content = build_day_message(team_role_mention, date_str)
-    clock_emojis = get_clock_emojis()
+    number_emojis = get_number_emojis()
     message = await channel.send(msg_content)
-    for emoji in clock_emojis:
+    for emoji in number_emojis:
         await message.add_reaction(emoji)
-
-def get_clock_emojis():
-    """Returns the list of clock emojis for 12 PM to 11 PM."""
-    return [
-        "🕛", # 12 PM
-        "🕐", # 1 PM
-        "🕑", # 2 PM
-        "🕒", # 3 PM
-        "🕓", # 4 PM
-        "🕔", # 5 PM
-        "🕕", # 6 PM
-        "🕖", # 7 PM
-        "🕗", # 8 PM
-        "🕘", # 9 PM
-        "🕙", # 10 PM
-        "🕚", # 11 PM
-    ]
 
